@@ -3,10 +3,12 @@ import cors from 'cors';
 import mongoose from "mongoose";
 import * as dotenv from 'dotenv';
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken';
 import User from './models/user.js'
 
 dotenv.config()
 const bcryptSalt=bcrypt.genSaltSync(10);
+const jwtSecreate="wejhwer4fwkjdfu435345kjbfdefbweiuf";
 const app=express();
 
 app.use(express.json())
@@ -25,6 +27,7 @@ app.get('/test', (req,res)=>{
 })
 
 
+//Register user
 app.post('/register', async(req,res)=>{
     console.log(req.body)
     const {name, email, password}=req.body;
@@ -41,7 +44,32 @@ app.post('/register', async(req,res)=>{
  }
   
 })
-app.listen(4000, ()=>{
+
+
+//Login user
+
+app.post('/login',async (req,res)=>{
+    const {email,password}=req.body;
+    const user=await User.findOne({email});
+
+    
+    if(user){
+        const passOk=await bcrypt.compareSync(password,user.password);
+        if(passOk){
+            jwt.sign({email:user.email, id:user._id}, jwtSecreate, {}, (err,token)=>{
+                    if(err) throw err;
+                res.cookie('token', token).json('pass ok');
+            });
+            
+        }else{
+            res.status(422).json("pass not ok")
+        }
+        
+    }else{
+        res.json('Not Found')
+    }
+})  
+app.listen(4000, ()=>{      
     console.log("server running on port 4000");
 })
 

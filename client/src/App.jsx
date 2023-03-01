@@ -5,6 +5,9 @@ import LoginPage from '../components/LoginPage';
 import Layout from '../components/Layout';
 import IndexPage from '../components/pages/IndexPage';
 import Register from '../components/Register';
+import axios from 'axios';
+
+axios.defaults.baseURL='http://127.0.0.1:4000'
 function App(){
 
   return(
